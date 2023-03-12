@@ -1,0 +1,8 @@
+{
+  "name": "Fan Manager",
+  "description": "Manage BIOS fan curves",
+  "uuid": "fan-manager@bartlomiejbloniarz@github.io",
+  "shell-version": [
+    "42"
+  ]
+}
