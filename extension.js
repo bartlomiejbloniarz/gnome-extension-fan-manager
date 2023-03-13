@@ -12,29 +12,8 @@ const Me = imports.misc.extensionUtils.getCurrentExtension();
 
 const _ = ExtensionUtils.gettext;
 
-function _isFound(str) {
-    var f = false;
-    for(var i=0; i < str.length;i++) {
-        if(str[i] == "~") {
-            f = true;
-        }
-    }
-
-    if(f) {
-        let re = /~/gi;
-        let s = str.replace(re, GLib.get_home_dir());
-        return [f, s];
-    }
-    else {
-        return [f,str];
-    }
-}
-
-function _toUtfArray(str) {
-    let [f, s2] = _isFound(str);
-    let arr = s2.split(" ");
-
-    return arr;
+function toArray(str) {
+    return str.split(" ")
 }
 
 const Indicator = GObject.registerClass(
@@ -58,17 +37,17 @@ class Indicator extends PanelMenu.Button {
 
             item.connect('activate', () => {
                 try {
-                    let proc = Gio.Subprocess.new(_toUtfArray("pkexec smbios-thermal-ctl --set-thermal-mode " + map.get(key)), Gio.SubprocessFlags.NONE);
+                    let proc = Gio.Subprocess.new(toArray("pkexec smbios-thermal-ctl --set-thermal-mode " + map.get(key)), Gio.SubprocessFlags.NONE);
                 
                     proc.wait_check_async(null, (proc, result) => {
                         try {
                             if (proc.wait_check_finish(result)) {
-                                Main.notify(_(map.get(key)))
+                                Main.notify("Successfully changed to mode: " + key)
                             } else {
-                                Main.notify(_("Error"))
+                                Main.notify("Error")
                             }
                         } catch (e) {
-                            Main.notify(_(e.toString()))
+                            Main.notify(e.toString())
                         }
                     });
                 } catch (e) {
